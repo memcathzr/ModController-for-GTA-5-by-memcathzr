@@ -19,10 +19,12 @@ It enables or disables selected mod files and folders using a simple console int
 
 
 
+
 ---
 
 ## 📝 modConfig.json Example
 
+```json
 {
   "ModPaths": [
     "a",
@@ -30,6 +32,7 @@ It enables or disables selected mod files and folders using a simple console int
     "menyoo.dll"
   ]
 }
+```
 
 "a" → backs up the entire folder
 
