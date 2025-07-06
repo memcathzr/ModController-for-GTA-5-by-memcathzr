@@ -1,0 +1,7 @@
+{
+  "ModPaths": [
+    "a",
+    "b/scripts",
+    "menyoo.dll"
+  ]
+}
