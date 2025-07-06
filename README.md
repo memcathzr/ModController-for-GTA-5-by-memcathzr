@@ -9,7 +9,7 @@ It enables or disables selected mod files and folders using a simple console int
 
 ## 🧩 Installation
 
-1. Download the latest release: [`ModController-v1.0.0.zip`](https://github.com/memcathzr/modcontroller/releases/latest)
+1. Download the latest release: [`ModController-v1.0.zip`]([https://github.com/memcathzr/modcontroller/releases/latest](https://github.com/memcathzr/ModController-for-GTA-5-by-memcathzr/releases/tag/v1.0))
 2. Extract all files next to your GTA V executable (`GTA5.exe`)
 3. Create or edit a valid `modConfig.json` file
 4. Run `ModController.exe` and choose your desired action
