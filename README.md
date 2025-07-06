@@ -66,19 +66,25 @@ Missing items are skipped with warnings
 ✅ Open-source under GPL v3
 
 🎮 Why Use ModController?
+
 Whether you're switching between singleplayer modding and online play, ModController makes it easy to isolate and restore your mod files safely — all without renaming, dragging, or deleting files manually.
 
 ⚙️ Build Instructions
+
 Requires .NET 8 SDK
+
 dotnet publish -c Release -r win-x64 --self-contained false
+
 This produces a standalone .exe without dependencies
 
 🔓 License
+
 This project is licensed under the GNU GPL v3.
 
 You are free to use, modify, and distribute this tool, but any modified versions must also remain open-source under the same license.
 
 🌐 Repository
+
 Original source: https://github.com/memcathzr/modcontroller Pull requests and contributions are welcome!
 
 
