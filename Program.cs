@@ -1,224 +1,204 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
+using System.Collections.Generic;
 
-class ConfigModel
+namespace ModController
 {
-    public string[] ModPaths { get; set; }
-}
-
-class Program
-{
-    static string exeDir = AppDomain.CurrentDomain.BaseDirectory;
-    static string configPath = Path.Combine(exeDir, "modConfig.json");
-    static string backupDir = Path.Combine(exeDir, "ModsBackup");
-
-    static void Main(string[] args)
+    class Program
     {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
-        Console.Title = "ModController Terminal";
-
-        if (!File.Exists(configPath))
+        static void Main()
         {
-            Console.WriteLine("❌ 'modConfig.json' not found beside the executable.");
-            Console.ReadKey();
-            return;
-        }
+            ConsoleUI.ShowBanner();
 
-        if (!Directory.Exists(backupDir))
-        {
-            Directory.CreateDirectory(backupDir);
-            Console.WriteLine("📁 'ModsBackup' folder created.");
-        }
-
-        while (true)
-        {
-            ShowHeader();
-            Console.WriteLine("📢 Available Actions:");
-            Console.WriteLine("  1 → Enable Mods");
-            Console.WriteLine("  2 → Disable Mods");
-            Console.WriteLine("  3 → How to Use");
-            Console.WriteLine("  0 → Exit");
-            Console.Write("\n🔍 Enter your choice: ");
-            string input = Console.ReadLine()?.Trim().ToLower();
-
-            switch (input)
+            var config = ConfigLoader.Load("modConfig.json");
+            if (config == null || config.ModPaths == null || config.ModPaths.Count == 0)
             {
-                case "1": EnableMods(); break;
-                case "2": DisableMods(); break;
-                case "3": ShowHelp(); break;
-                case "0": return;
-                default: Console.WriteLine("⚠️ Unknown command. Try 1, 2, 3 or 0."); break;
+                ConsoleUI.ShowError("modConfig.json could not be loaded or is empty.");
+                return;
             }
 
-            Console.WriteLine("\n🔄 Press any key to return to the menu...");
-            Console.ReadKey();
+            ConsoleUI.ShowInfo($"Current mod status: {config.ModStatus ?? "Unknown"}");
+
+            bool exitRequested = false;
+            while (!exitRequested)
+            {
+                ConsoleUI.ShowMenu();
+                var key = Console.ReadKey(true).Key;
+
+                Console.Clear(); // 🧼 Refresh screen after each action
+
+                switch (key)
+                {
+                    case ConsoleKey.E:
+                        ModManager.EnableMods(config);
+                        break;
+                    case ConsoleKey.D:
+                        ModManager.DisableMods(config);
+                        break;
+                    case ConsoleKey.Q:
+                        ConsoleUI.ShowExit();
+                        exitRequested = true;
+                        break;
+                    default:
+                        ConsoleUI.ShowWarning("Invalid selection. Please try again.");
+                        break;
+                }
+            }
         }
     }
 
-    static void EnableMods()
+    class Config
     {
-        var config = JsonSerializer.Deserialize<ConfigModel>(File.ReadAllText(configPath));
+        public List<string> ModPaths { get; set; }
+        public string ModStatus { get; set; }
+    }
 
-        foreach (string path in config.ModPaths)
+    static class ConfigLoader
+    {
+        public static Config Load(string path)
         {
-            string source = Path.Combine(backupDir, path);
-            string target = Path.Combine(exeDir, path);
-
             try
             {
-                if (Directory.Exists(source))
-                {
-                    if (Directory.Exists(target) && !ConfirmOverwrite(target))
-                    {
-                        Console.WriteLine($"⏩ Skipped folder: {path}");
-                        continue;
-                    }
-
-                    CopyDirectory(source, target);
-                    Directory.Delete(source, true);
-                    Console.WriteLine($"📂 Folder restored: {path}");
-                }
-                else if (File.Exists(source))
-                {
-                    if (File.Exists(target) && !ConfirmOverwrite(target))
-                    {
-                        Console.WriteLine($"⏩ Skipped file: {path}");
-                        continue;
-                    }
-
-                    Directory.CreateDirectory(Path.GetDirectoryName(target)!);
-                    File.Copy(source, target, true);
-                    File.Delete(source);
-                    Console.WriteLine($"📄 File restored: {path}");
-                }
-                else
-                {
-                    Console.WriteLine($"⚠️ Missing in backup: {path}");
-                }
+                var json = File.ReadAllText(path);
+                return JsonSerializer.Deserialize<Config>(json);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error restoring '{path}': {ex.Message}");
+                ConsoleUI.ShowError($"Failed to read config: {ex.Message}");
+                return null;
             }
         }
-    }
 
-    static void DisableMods()
-    {
-        var config = JsonSerializer.Deserialize<ConfigModel>(File.ReadAllText(configPath));
-
-        foreach (string path in config.ModPaths)
+        public static void Save(Config config, string path)
         {
-            string source = Path.Combine(exeDir, path);
-            string target = Path.Combine(backupDir, path);
-
             try
             {
-                if (Directory.Exists(source))
-                {
-                    if (Directory.Exists(target) && !ConfirmOverwrite(target))
-                    {
-                        Console.WriteLine($"⏩ Skipped folder: {path}");
-                        continue;
-                    }
-
-                    CopyDirectory(source, target);
-                    Directory.Delete(source, true);
-                    Console.WriteLine($"📁 Folder backed up: {path}");
-                }
-                else if (File.Exists(source))
-                {
-                    if (File.Exists(target) && !ConfirmOverwrite(target))
-                    {
-                        Console.WriteLine($"⏩ Skipped file: {path}");
-                        continue;
-                    }
-
-                    Directory.CreateDirectory(Path.GetDirectoryName(target)!);
-                    File.Copy(source, target, true);
-                    File.Delete(source);
-                    Console.WriteLine($"📄 File backed up: {path}");
-                }
-                else
-                {
-                    Console.WriteLine($"⚠️ Not found: {path}");
-                }
+                var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(path, json);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error backing up '{path}': {ex.Message}");
+                ConsoleUI.ShowError($"Failed to save config: {ex.Message}");
             }
         }
     }
 
-    static void CopyDirectory(string sourceDir, string targetDir)
+    static class ModManager
     {
-        Directory.CreateDirectory(targetDir);
+        private static readonly string BackupFolder = "ModsBackup";
 
-        foreach (string file in Directory.GetFiles(sourceDir))
+        public static void DisableMods(Config config)
         {
-            string targetFile = Path.Combine(targetDir, Path.GetFileName(file));
-            File.Copy(file, targetFile, true);
+            ConsoleUI.ShowInfo("Disabling mods...");
+            Directory.CreateDirectory(BackupFolder);
+
+            foreach (var path in config.ModPaths)
+            {
+                if (File.Exists(path))
+                {
+                    var dest = Path.Combine(BackupFolder, Path.GetFileName(path));
+                    File.Move(path, dest, true);
+                    ConsoleUI.ShowSuccess($"Moved: {path} → {dest}");
+                }
+                else if (Directory.Exists(path))
+                {
+                    var dest = Path.Combine(BackupFolder, new DirectoryInfo(path).Name);
+                    Directory.Move(path, dest);
+                    ConsoleUI.ShowSuccess($"Folder moved: {path} → {dest}");
+                }
+                else
+                {
+                    ConsoleUI.ShowWarning($"Not found: {path}");
+                }
+            }
+
+            config.ModStatus = "Disabled";
+            ConfigLoader.Save(config, "modConfig.json");
         }
 
-        foreach (string folder in Directory.GetDirectories(sourceDir))
+        public static void EnableMods(Config config)
         {
-            string subTarget = Path.Combine(targetDir, Path.GetFileName(folder));
-            CopyDirectory(folder, subTarget);
+            ConsoleUI.ShowInfo("Restoring mods...");
+
+            foreach (var path in config.ModPaths)
+            {
+                var fileName = Path.GetFileName(path);
+                var backupPath = Path.Combine(BackupFolder, fileName);
+
+                if (File.Exists(backupPath))
+                {
+                    File.Move(backupPath, path, true);
+                    ConsoleUI.ShowSuccess($"Restored: {backupPath} → {path}");
+                }
+                else if (Directory.Exists(backupPath))
+                {
+                    Directory.Move(backupPath, path);
+                    ConsoleUI.ShowSuccess($"Folder restored: {backupPath} → {path}");
+                }
+                else
+                {
+                    ConsoleUI.ShowWarning($"Backup not found: {backupPath}");
+                }
+            }
+
+            config.ModStatus = "Enabled";
+            ConfigLoader.Save(config, "modConfig.json");
         }
     }
 
-    static bool ConfirmOverwrite(string targetPath)
+    static class ConsoleUI
     {
-        Console.WriteLine($"\n⚠️ '{targetPath}' already exists.");
-        Console.Write("Do you want to overwrite it? (y/n): ");
-        string input = Console.ReadLine()?.Trim().ToLower();
-        return input == "y" || input == "yes";
-    }
+        public static void ShowBanner()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("╔════════════════════════════════════════════╗");
+            Console.WriteLine("║     GTA V ModController by memcathzr       ║");
+            Console.WriteLine("╚════════════════════════════════════════════╝");
+            Console.ResetColor();
+        }
 
-    static void ShowHeader()
-    {
-        Console.Clear();
-        Console.WriteLine("════════════════════════════════════════════════");
-        Console.WriteLine("🔧 ModController for GTA 5 by memcathzr Version:1.0");
-        Console.WriteLine("🌐 GitHub: https://github.com/memcathzr/ModController-for-GTA-5-by-memcathzr");
-        Console.WriteLine("🛠️ Open Source | Licensed under GNU GPL v3");
-        Console.WriteLine("════════════════════════════════════════════════\n");
-    }
+        public static void ShowMenu()
+        {
+            Console.WriteLine("\n[E] Enable Mods");
+            Console.WriteLine("[D] Disable Mods");
+            Console.WriteLine("[Q] Quit");
+            Console.Write("Your choice: ");
+        }
 
-    static void ShowHelp()
-    {
-        Console.Clear();
-        Console.WriteLine("════════════════════════════════════════════════════");
-        Console.WriteLine("📘 HOW TO USE MODCONTROLLER");
-        Console.WriteLine("════════════════════════════════════════════════════");
-        Console.WriteLine("📄 Required Files:");
-        Console.WriteLine("• modConfig.json — must be beside the executable");
-        Console.WriteLine("• ModsBackup      — will be auto-created if missing\n");
+        public static void ShowInfo(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("[Info] " + message);
+            Console.ResetColor();
+        }
 
-        Console.WriteLine("🔧 Commands:");
-        Console.WriteLine("1 → Enable Mods     — restores files from ModsBackup");
-        Console.WriteLine("2 → Disable Mods    — moves mods to ModsBackup");
-        Console.WriteLine("3 → How to Use      — shows this help screen");
-        Console.WriteLine("0 → Exit            — closes the program\n");
+        public static void ShowSuccess(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("[✓] " + message);
+            Console.ResetColor();
+        }
 
-        Console.WriteLine("📝 modConfig.json Example:");
-        Console.WriteLine("{");
-        Console.WriteLine("  \"ModPaths\": [");
-        Console.WriteLine("    \"a\",");
-        Console.WriteLine("    \"b/scripts\",");
-        Console.WriteLine("    \"menyoo.dll\"");
-        Console.WriteLine("  ]");
-        Console.WriteLine("}\n");
+        public static void ShowWarning(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("[Warning] " + message);
+            Console.ResetColor();
+        }
 
-        Console.WriteLine("💡 Notes:");
-        Console.WriteLine("• Paths must be relative to the EXE");
-        Console.WriteLine("• Supports folders and individual files");
-        Console.WriteLine("• Prompts before overwriting existing files");
-        Console.WriteLine("• This program should be in the GTA 5 folder");
-        Console.WriteLine("════════════════════════════════════════════════════");
-        Console.WriteLine("\n🔁 Press any key to return to menu...");
-        Console.ReadKey();
+        public static void ShowError(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("[Error] " + message);
+            Console.ResetColor();
+        }
+
+        public static void ShowExit()
+        {
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine("Exiting... Have fun!");
+            Console.ResetColor();
+        }
     }
 }

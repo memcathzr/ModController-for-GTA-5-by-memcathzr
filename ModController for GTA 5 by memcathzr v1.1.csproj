@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<PublishSingleFile>true</PublishSingleFile>
+		<SelfContained>false</SelfContained>
+		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+		<PublishTrimmed>false</PublishTrimmed>
+		<!-- Optional: true = smaller size, but riskier -->
+	</PropertyGroup>
+
+</Project>
