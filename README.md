@@ -3,7 +3,7 @@
 🔧 A terminal-based mod toggler for Grand Theft Auto V.  
 It enables or disables selected mod files and folders using a simple console interface. Configured via `modConfig.json`, the tool safely moves mods to and from the `ModsBackup/` folder, keeping your game directory clean for mod-free launches.
 
-📥 **Download v1.0:** [![Download](https://img.shields.io/badge/Download-v1.0-blue.svg)](https://github.com/memcathzr/ModController-for-GTA-5-by-memcathzr/releases/download/v1.0/ModController.for.GTA-5-by.memcathzr.v1.0.zip)
+📥 **Download v1.0:** [![Download](https://img.shields.io/badge/Download-v1.0-blue.svg)](https://github.com/memcathzr/ModController-for-GTA-5-by-memcathzr/releases/download/v1.1/ModController.for.GTA-5-by.memcathzr.v1.1.zip)
 
 
 
@@ -11,7 +11,7 @@ It enables or disables selected mod files and folders using a simple console int
 
 ## 🧩 Installation
 
-1. Download the latest release: [`ModController-v1.0.zip`]([https://github.com/memcathzr/modcontroller/releases/latest](https://github.com/memcathzr/ModController-for-GTA-5-by-memcathzr/releases/tag/v1.0))
+1. Download the latest release: [`ModController-v1.1.zip`]([https://github.com/memcathzr/modcontroller/releases/latest](https://github.com/memcathzr/ModController-for-GTA-5-by-memcathzr/releases/tag/v1.1))
 2. Extract all files next to your GTA V executable (`GTA5.exe`)
 3. Create or edit a valid `modConfig.json` file
 4. Run `ModController.exe` and choose your desired action
@@ -29,26 +29,24 @@ It enables or disables selected mod files and folders using a simple console int
 ```json
 {
   "ModPaths": [
-    "a",
-    "b/scripts",
-    "menyoo.dll"
-  ]
+    "mods",
+    "scripts//c",
+    "dinput8.dll"
+  ],
+  "ModStatus": "Disabled"
 }
 ```
 
-"a" → backs up the entire folder
-
-"b/scripts" → backs up a nested folder
-
-"menyoo.dll" → backs up a specific file
+What does it mean?
+It puts the mods folder, the c folder in the scripts folder, and the dinput8.dll file in the ModsBackup folder.
+The program also tracks mod status ("Enabled" or "Disabled") inside modConfig.json.
 
 All paths are relative to the EXE location
 
 🖥️ Terminal Menu,
-1 → Enable Mods     (restores files from ModsBackup)
-2 → Disable Mods    (moves files into ModsBackup)
-3 → How to Use      (displays usage help)
-0 → Exit            (quits the program)
+E → Enable Mods     (restores files from ModsBackup)
+D → Disable Mods    (moves files into ModsBackup)
+Q → Quit            (quits the program)
 
 Conflicts trigger overwrite confirmation
 
@@ -87,7 +85,7 @@ You are free to use, modify, and distribute this tool, but any modified versions
 
 🌐 Repository
 
-Original source: https://github.com/memcathzr/modcontroller Pull requests and contributions are welcome!
+Original source: https://github.com/memcathzr/ModController-for-GTA-5-by-memcathzr Pull requests and contributions are welcome!
 
 
 
