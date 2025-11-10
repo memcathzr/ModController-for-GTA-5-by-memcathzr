@@ -45,6 +45,7 @@ The program also tracks mod status ("Enabled" or "Disabled") inside modConfig.js
 All paths are relative to the EXE location
 
 🖥️ Terminal Menu,
+
 E → Enable Mods     (restores files from ModsBackup)
 
 D → Disable Mods    (moves files into ModsBackup)
