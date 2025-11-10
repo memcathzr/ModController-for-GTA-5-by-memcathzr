@@ -3,7 +3,7 @@
 🔧 A terminal-based mod toggler for Grand Theft Auto V.  
 It enables or disables selected mod files and folders using a simple console interface. Configured via `modConfig.json`, the tool safely moves mods to and from the `ModsBackup/` folder, keeping your game directory clean for mod-free launches.
 
-📥 **Download v1.1:** [![Download](https://img.shields.io/badge/Download-v1.1-blue.svg)](https://github.com/memcathzr/ModController-for-GTA-5-by-memcathzr/releases/download/v1.1/ModController.for.GTA-5-by.memcathzr.v1.1.zip)
+📥 **Download v1.1:** [![Download](https://img.shields.io/badge/Download-v1.1-blue.svg)](https://github.com/memcathzr/ModController-for-GTA-5-by-memcathzr/releases/download/v1.1/ModController.for.GTA.5.by.memcathzr.v1.1.zip)
 
 
 
