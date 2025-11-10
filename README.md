@@ -11,7 +11,7 @@ It enables or disables selected mod files and folders using a simple console int
 
 ## 🧩 Installation
 
-1. Download the latest release: [`ModController-v1.1.zip`]([https://github.com/memcathzr/modcontroller/releases/latest](https://github.com/memcathzr/ModController-for-GTA-5-by-memcathzr/releases/tag/v1.1))
+1. Download the latest release: [`ModController-v1.1.zip`]([https://github.com/memcathzr/modcontroller/releases/latest](https://github.com/memcathzr/ModController-for-GTA-5-by-memcathzr/releases/download/v1.1/ModController.for.GTA.5.by.memcathzr.v1.1.zip))
 2. Extract all files next to your GTA V executable (`GTA5.exe`)
 3. Create or edit a valid `modConfig.json` file
 4. Run `ModController.exe` and choose your desired action
@@ -39,13 +39,16 @@ It enables or disables selected mod files and folders using a simple console int
 
 What does it mean?
 It puts the mods folder, the c folder in the scripts folder, and the dinput8.dll file in the ModsBackup folder.
+
 The program also tracks mod status ("Enabled" or "Disabled") inside modConfig.json.
 
 All paths are relative to the EXE location
 
 🖥️ Terminal Menu,
 E → Enable Mods     (restores files from ModsBackup)
+
 D → Disable Mods    (moves files into ModsBackup)
+
 Q → Quit            (quits the program)
 
 Conflicts trigger overwrite confirmation
